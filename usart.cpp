@@ -9,11 +9,7 @@ namespace {
         UBRR0L = baud_setting;
     }
 
-    inline void enableUsartReceive() {
-        UCSR0B = (1 << RXEN0);
-    }
-
-    inline void enableUsartTransmit() {
+    inline void enableUsartReceiveAndTransmit() {
         UCSR0B = (1 << TXEN0) | (1 << RXEN0);
     }
 
@@ -33,10 +29,10 @@ namespace {
 
 }
 
-namespace avr {
-    void initUsart(uint32_t baud_rate) {
+namespace avr::usart {
+    void init(uint32_t baud_rate) {
         setBaudRate(baud_rate);
-        enableUsartTransmit();
+        enableUsartReceiveAndTransmit();
         set8bitCharacterSize();
     }
 
