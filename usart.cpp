@@ -1,5 +1,6 @@
 #include "usart.h"
 #include <avr/io.h>
+#include <stdio.h>
 
 namespace {
     inline void setBaudRate(uint32_t baud_rate) {
@@ -22,7 +23,7 @@ namespace {
         UDR0 = data;
     }
 
-    inline char readChar() {
+    inline uint8_t readByte() {
         loop_until_bit_is_set(UCSR0A, RXC0);
         return UDR0;
     }
@@ -46,7 +47,18 @@ namespace avr::usart {
 
     void readString(char* str, uint8_t length) {
         for (int i = 0; i < length; i++) {
-            str[i] = readChar();
+            str[i] = readByte();
         }
+    }
+
+    uint8_t readBytes(uint8_t* bytes, uint8_t until_delimiter, uint8_t max_length) {
+        for (int bytes_read = 0; bytes_read < max_length; bytes_read++) {
+            const uint8_t received_byte { readByte() };
+            if (received_byte == until_delimiter) {
+                return bytes_read;
+            }
+            bytes[bytes_read] = received_byte;
+        }
+        return max_length;
     }
 }
